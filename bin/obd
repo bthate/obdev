@@ -1,0 +1,20 @@
+#!/usr/bin/python3 -u
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+
+from ob import k, __version__
+from ob.shl import daemon, execute, parse_cli
+from ob.log import level
+from ob.utl import  hd
+
+def main():
+    parse_cli("obd", __version__)
+    level("debug", k.cfg.logdir or os.path.join(hd(".obot"), "logs"))
+    daemon()
+    k.cfg.noshell = False
+    k.start()
+    k.init(k.cfg.modules)
+    k.wait()
+        
+execute(main)
+os._exit(0)
