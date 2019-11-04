@@ -11,7 +11,7 @@ import _thread
 from ob.cls import Cfg
 from ob.dbs import Db
 from ob.dpt import dispatch
-from ob.err import EINIT 
+from ob.err import EINIT, ENOTXT 
 from ob.flt import Fleet
 from ob.hdl import Handler
 from ob.shl import enable_history, set_completer, writepid
@@ -41,10 +41,11 @@ class Kernel(Handler):
         self.cfg = Cfg()
         self.db = Db()
         self.fleet = Fleet()
-        self.register(dispatch)
+        self.prompt = True
         self.state = ob.Object()
         self.state.started = False
         self.state.starttime = time.time()
+        self.verbose = True
         self.users = Users()
 
     def add(self, cmd, func):
@@ -59,9 +60,7 @@ class Kernel(Handler):
             return
         from ob.evt import Event
         self.load_mod("ob.dpt")
-        self.cfg.prompt = False
-        self.cfg.verbose = True
-        self.start()
+        self.prompt = False
         e = Event()
         e.txt = txt
         e.options = self.cfg.options
@@ -69,13 +68,27 @@ class Kernel(Handler):
         self.handle(e)
         e.wait()
 
+    def dispatch(self, event):
+        try:
+           event.parse()
+        except ENOTXT:
+           event.ready()
+           return
+        event._func = self.get_cmd(event.chk)
+        event.orig = event.orig or repr(self)
+        if event._func:
+            event._func(event)
+            event.show()
+        event.ready()
+
     def init(self, modstr):
         """ initialize a comma seperated list of modules. """
         if not modstr:
             return
         if "all" in modstr:
-            modstr += ",ob,obot.cmd,obot"
+            modstr += "ob.dpt,obot.cmd,obot"
             modstr = modstr.replace("all", "")
+        thrs = []
         for mod in mods(self, modstr):
             next = False
             for ex in self.cfg.exclude.split(","):
@@ -84,9 +97,9 @@ class Kernel(Handler):
                     break
             if next:
                 continue
-            logging.warn("init %s" % get_name(mod))
             if "init" not in dir(mod):
                 continue
+            logging.warn("init %s" % get_name(mod))
             try:
                 mod.init()
             except EINIT:
@@ -100,9 +113,8 @@ class Kernel(Handler):
         while not self._stopped:
             e = self.poll()
             self.put(e)
-            e.wait()
 
-    def prompt(self, e):
+    def doprompt(self, e):
         """ return a event by prompting for some text. """
         e.txt = input("> ")
         e.txt = e.txt.rstrip()
@@ -113,12 +125,12 @@ class Kernel(Handler):
         e = Event()
         e.options = self.cfg.options
         e.origin = "root@shell"
-        self.prompt(e)
+        self.doprompt(e)
         return e
 
     def raw(self, txt):
         """ write directly to display. """
-        if not txt:
+        if not self.verbose or not txt:
             return
         sys.stdout.write(str(txt) + "\n")
         sys.stdout.flush()
@@ -130,7 +142,7 @@ class Kernel(Handler):
         else:
             self.fleet.echo(orig, channel, txt, type)
 
-    def start(self, handler=True, input=True, output=True):
+    def start(self):
         """ start the kernel. """
         if self._started:
             return
@@ -148,7 +160,7 @@ class Kernel(Handler):
         set_completer(self.cmds)
         enable_history()
         writepid()
-        super().start(handler, input, output)
+        super().start(False)
 
     def wait(self):
         """ sleep in a loop. """

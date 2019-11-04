@@ -20,11 +20,11 @@ from ob.utl import get_name
 from ob.cls import get_type
 
 def __dir__():
-    return ("Handler")
+    return ("Handler",)
 
 class Handler(Loader, Launcher):
 
-    """ Event Handler class. """
+    """ event Handler class. """
 
     def __init__(self):
         super().__init__()
@@ -36,6 +36,7 @@ class Handler(Loader, Launcher):
         self._threaded = False
         self._type = get_type(self)
         self.cfg = Cfg()
+        ob.update(self.cfg, {"prompt": True, "verbose": True})
         self.classes = []
         self.cmds = {}
         self.handlers = []
@@ -46,11 +47,32 @@ class Handler(Loader, Launcher):
         self.state.last = time.time()
         self.state.nrsend = 0
 
+    def dispatch(self, event):
+        try:
+           event.parse()
+        except ENOTXT:
+           event.ready()
+           return
+        event._func = self.get_cmd(event.chk)
+        event.orig = event.orig or repr(self)
+        if event._func:
+            event._func(self, event)
+            event.show()
+        event.ready()
+
     def get_cmd(self, cmd):
         """ return matching function. """
         func = self.cmds.get(cmd, None)
         if not func and self.cfg.autoload:
-            mn = self.names.get(func, None)
+            mn = self.names.get(cmd, None)
+            if mn:
+                self.load_mod(mn)
+        return self.cmds.get(cmd, None)
+
+    def get_handler(self, cmd):
+        func = self.handler.get(cmd, None)
+        if not func and self.cfg.autoload:
+            mn = self.names.get(cmd, None)
             if mn:
                 self.load_mod(mn)
         return self.cmds.get(cmd, None)
@@ -60,6 +82,7 @@ class Handler(Loader, Launcher):
         thrs = []
         for h in self.handlers:
             h(self, e)
+        self.dispatch(e)
 
     def handler(self):
         """ basic event handler routine. """
@@ -71,7 +94,7 @@ class Handler(Loader, Launcher):
                 self.handle(e)
             except Exception as ex:
                 logging.error(get_exception())
-        logging.warn("stop %s" % get_name(self))
+        logging.warning("stop %s" % get_name(self))
         self._ready.set()
 
     def input(self):
@@ -106,6 +129,7 @@ class Handler(Loader, Launcher):
 
     def register(self, handler):
         """ register a handler for a command. """
+        logging.warning("register %s" % get_name(handler))
         if handler not in self.handlers:
             self.handlers.append(handler)
 
@@ -115,9 +139,12 @@ class Handler(Loader, Launcher):
     def scan(self, mod):
         """ scan a module for commands/callbacks. """
         for key, o in inspect.getmembers(mod, inspect.isfunction):
-            if o.__code__.co_argcount == 1 and "event" in o.__code__.co_varnames:
-                self.cmds[key] = o
-                self.modules[key] = o.__module__
+            if "event" in o.__code__.co_varnames:
+                if o.__code__.co_argcount == 1 and key not in self.cmds:
+                    self.cmds[key] = o
+                    self.modules[key] = o.__module__
+                elif o.__code__.co_argcount == 2 and key not in self.handlers:
+                    self.register(o)
         for key, o in inspect.getmembers(mod, inspect.isclass):
             if issubclass(o, Persist):
                 t = get_type(o)
@@ -127,15 +154,13 @@ class Handler(Loader, Launcher):
                 if w not in self.names:
                     self.names[w] = str(t)
 
-    def start(self, handler=True, input=True, output=True):
+    def start(self, output=True):
         """ start this handler. """
         logging.warning("start %s" % get_name(self))
-        if handler:
-            self.launch(self.handler)
-        if input:
-            self.launch(self.input)
         if output:
             self.launch(self.output)
+        self.launch(self.handler)
+        self.input()
 
     def stop(self):
         self._stopped = True
@@ -158,10 +183,12 @@ class Handler(Loader, Launcher):
             for ex in self.cfg.exclude.split(","):
                 if ex and ex in n[1]:
                     skip = True
+                    break
             if skip:
                 continue
             logging.warn("load %s" % str(n[1]))
-            mods.append(self.load_mod(n[1], force=True))
-        for m in mods:
-            self.scan(m)
+            try:
+                mods.append(self.load_mod(n[1], force=True))
+            except ModuleNotFoundError:
+                logging.debug(get_exception())
         return mods

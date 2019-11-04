@@ -1,12 +1,18 @@
 """ OB threads (tasks). """
 
 import logging
+
 import ob
 import queue
 import threading
 import time
 import types
+import _thread
 
+from multiprocessing import Process
+from multiprocessing.pool import Pool
+
+from ob.err import EINIT
 from ob.trc import get_exception
 from ob.utl import get_name
 
@@ -32,11 +38,42 @@ class Thr(threading.Thread):
         func, args = self._queue.get()
         try:
             self._result = func(*args)
+        except EINIT:
+            pass
         except Exception as ex:
             logging.error(get_exception())
-        #if args:
-        #    if "ready" in dir(args[0]):
-        #        args[0].ready()
+ 
+    def join(self, timeout=None):
+        super().join(timeout)
+        return self._result
+
+    def stop(self):
+        self._stopped = True
+
+class Proc(Process):
+
+    def __init__(self, func, *args, name="noname", daemon=True):
+        super().__init__(None, self.run, name, (), {}, daemon=daemon)
+        self._queue = queue.Queue()
+        self._queue.put((func, args))
+        self._result = None
+        self._stopped = False
+
+    def __iter__(self):
+        return self
+
+    def __next__(self):
+        for k in dir(self):
+            yield k
+
+    def run(self):
+        func, args = self._queue.get()
+        try:
+            self._result = func(*args)
+        except EINIT:
+            pass
+        except Exception as ex:
+            logging.error(get_exception())
  
     def join(self, timeout=None):
         super().join(timeout)
@@ -48,6 +85,7 @@ class Launcher:
         super().__init__()
         self._queue = queue.Queue()
         self._stopped = False
+        self.threaded = False
 
     def launch(self, func, *args, **kwargs):
         name = ""
@@ -56,13 +94,10 @@ class Launcher:
         except (AttributeError, IndexError):
             name = get_name(func)
         t = Thr(func, *args, name=name)
-        try:
-            t.start()
-        except RuntimeError:
-            self._queue.put_nowait(t)
+        t.start()
         return t
 
-    def start(self):
-        while not self._stopped:
-            t = self._queue.get()
-            t.start()
+    def proc(self, func, *args, **kwargs):
+        t = Proc(target=func, args=tuple(args))
+        t.start()
+        return t
