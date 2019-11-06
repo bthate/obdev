@@ -9,6 +9,7 @@ __version__ = 31
 
 import datetime
 import json
+import multiprocessing
 import os
 import types
 import uuid
@@ -244,7 +245,8 @@ def values(obj):
 from ob.krn import Kernel
 
 #:
-k = Kernel()
+m = multiprocessing.Manager()
+k = m.Value(Kernel)
 
 def last(obj, skip=True):
     """ return the last version of this type. """

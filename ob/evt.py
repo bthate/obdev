@@ -1,6 +1,7 @@
 """ parse string into an event. """
 
 import logging
+import multiprocessing
 import ob
 import time
 import threading
@@ -108,7 +109,6 @@ class Command(Object):
         self._cb = None
         self._error = None
         self._func = None
-        self._ready = threading.Event()
         self._thrs = []
         self.args = []
         self.cc = ""
@@ -210,7 +210,6 @@ class Event(Command, Persist):
 
     def __init__(self):
         super().__init__()
-        self._ready = threading.Event()
         self.channel = ""
         self.dolog = False
         self.type = "chat"
@@ -252,9 +251,6 @@ class Event(Command, Persist):
         if txt:
             self.reply(txt)
 
-    def ready(self):
-        self._ready.set()
-
     def reply(self, txt):
         self.result.append(txt)
 
@@ -264,7 +260,6 @@ class Event(Command, Persist):
 
     def wait(self):
         """ wait for event to finish. """
-        self._ready.wait()
         thrs = []
         vals = []
         for thr in self._thrs:
@@ -281,5 +276,4 @@ class Event(Command, Persist):
                 pass
         for thr in thrs:
             self._thrs.remove(thr)
-        self.ready()
         return self

@@ -1,7 +1,7 @@
 """ OB threads (tasks). """
 
 import logging
-
+import multiprocessing
 import ob
 import queue
 import threading
@@ -18,6 +18,8 @@ from ob.utl import get_name
 
 def __dir__():
     return ("Task", "Launcher", "ps")
+
+pool = Pool()
 
 class Thr(threading.Thread):
 
@@ -54,7 +56,7 @@ class Proc(Process):
 
     def __init__(self, func, *args, name="noname", daemon=True):
         super().__init__(None, self.run, name, (), {}, daemon=daemon)
-        self._queue = queue.Queue()
+        self._queue = multiprocessing.Queue()
         self._queue.put((func, args))
         self._result = None
         self._stopped = False
@@ -95,7 +97,7 @@ class Launcher:
             name = get_name(func)
         if self._threaded or kwargs.get("threaded", False):
             t = Thr(func, *args, name=name)
+            t.start()
+            return t
         else:
-            t = Proc(func, *args, name=name)
-        t.start()
-        return t
+            pool.apply_async(func, args)

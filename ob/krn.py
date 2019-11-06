@@ -2,6 +2,7 @@
 
 import inspect
 import logging
+import multiprocessing
 import ob
 import sys
 import threading
@@ -35,8 +36,6 @@ class Kernel(Handler):
     def __init__(self):
         super().__init__()
         self._outputed = False
-        self._prompted = threading.Event()
-        self._prompted.set()
         self._started = False
         self.cfg = Cfg()
         self.db = Db()
@@ -67,19 +66,6 @@ class Kernel(Handler):
         e.origin = origin or "root@shell"
         self.handle(e)
         e.wait()
-
-    def dispatch(self, event):
-        try:
-           event.parse()
-        except ENOTXT:
-           event.ready()
-           return
-        event._func = self.get_cmd(event.chk)
-        event.orig = event.orig or repr(self)
-        if event._func:
-            event._func(event)
-            event.show()
-        event.ready()
 
     def init(self, modstr):
         """ initialize a comma seperated list of modules. """
@@ -114,22 +100,15 @@ class Kernel(Handler):
             print(d)
         while not self._stopped:
             e = self.poll()
-            print(e)
             self.put(e)
-            #e.wait()
-
-    def doprompt(self, e):
-        """ return a event by prompting for some text. """
-        e.txt = input("> ")
-        e.txt = e.txt.strip()
-        return e
 
     def poll(self):
         from ob.evt import Event
         e = Event()
         e.options = self.cfg.options
         e.origin = "root@shell"
-        self.doprompt(e)
+        e.txt = input("> ")
+        e.txt = e.txt.strip()
         return e
 
     def raw(self, txt):

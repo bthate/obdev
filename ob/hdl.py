@@ -2,6 +2,7 @@
 
 import inspect
 import logging
+import multiprocessing
 import ob
 import os
 import pkgutil
@@ -29,9 +30,8 @@ class Handler(Loader, Launcher):
     def __init__(self):
         super().__init__()
         self._outputed = False
-        self._outqueue = queue.Queue()
-        self._queue = queue.Queue()
-        self._ready = threading.Event()
+        self._outqueue = ob.m.Queue()
+        self._queue = ob.m.Queue()
         self._stopped = False
         self._threaded = False
         self._type = get_type(self)
@@ -97,7 +97,6 @@ class Handler(Loader, Launcher):
             except Exception as ex:
                 logging.error(get_exception())
         logging.warning("stop %s" % get_name(self))
-        self._ready.set()
 
     def input(self, d=None):
         """ start a input loop. """
@@ -131,7 +130,8 @@ class Handler(Loader, Launcher):
 
     def put(self, event):
         """ put event on queue. """
-        self._queue.put_nowait(event)
+        print(event)
+        self._queue.put(event)
 
     def register(self, handler):
         """ register a handler for a command. """
@@ -165,9 +165,9 @@ class Handler(Loader, Launcher):
         logging.warning("start %s" % get_name(self))
         if output:
             self.launch(self.output)
-        self.launch(self.handler)
         if input:
             self.launch(self.input)
+        self.launch(self.handler)
 
     def stop(self):
         self._stopped = True

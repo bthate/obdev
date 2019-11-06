@@ -13,7 +13,6 @@ def main():
         daemon()
     k.walk("obot.cmd")
     k.init(k.cfg.modules)
-    print(k)
     k.start()
     k.wait()
 
