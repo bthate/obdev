@@ -67,13 +67,14 @@ class Proc(Process):
             yield k
 
     def run(self):
-        func, args = self._queue.get()
-        try:
-            self._result = func(*args)
-        except EINIT:
-            pass
-        except Exception as ex:
-            logging.error(get_exception())
+        while not self._stopped:
+            func, args = self._queue.get()
+            try:
+                self._result = func(*args)
+            except EINIT:
+                pass
+            except Exception as ex:
+                logging.error(get_exception())
  
     def join(self, timeout=None):
         super().join(timeout)
@@ -98,6 +99,6 @@ class Launcher:
         return t
 
     def proc(self, func, *args, **kwargs):
-        t = Proc(target=func, args=tuple(args))
+        t = Proc(func, tuple(args))
         t.start()
         return t

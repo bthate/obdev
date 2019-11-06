@@ -83,8 +83,11 @@ class Handler(Loader, Launcher):
         for h in self.handlers:
             h(self, e)
         self.dispatch(e)
+        e.wait()
 
-    def handler(self):
+    def handler(self, d=None):
+        if d:
+            print(d)
         """ basic event handler routine. """
         while not self._stopped:
             e = self._queue.get()
@@ -154,13 +157,14 @@ class Handler(Loader, Launcher):
                 if w not in self.names:
                     self.names[w] = str(t)
 
-    def start(self, output=True):
+    def start(self, input=True, output=True):
         """ start this handler. """
         logging.warning("start %s" % get_name(self))
         if output:
             self.launch(self.output)
         self.launch(self.handler)
-        self.input()
+        if input:
+            self.input()
 
     def stop(self):
         self._stopped = True

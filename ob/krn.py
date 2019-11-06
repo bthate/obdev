@@ -113,6 +113,7 @@ class Kernel(Handler):
         while not self._stopped:
             e = self.poll()
             self.put(e)
+            e.wait()
 
     def doprompt(self, e):
         """ return a event by prompting for some text. """
@@ -142,7 +143,7 @@ class Kernel(Handler):
         else:
             self.fleet.echo(orig, channel, txt, type)
 
-    def start(self):
+    def start(self, input=False, output=True):
         """ start the kernel. """
         if self._started:
             return
@@ -160,7 +161,7 @@ class Kernel(Handler):
         set_completer(self.cmds)
         enable_history()
         writepid()
-        super().start(False)
+        super().start(input, output)
 
     def wait(self):
         """ sleep in a loop. """
