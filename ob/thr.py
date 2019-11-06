@@ -67,14 +67,13 @@ class Proc(Process):
             yield k
 
     def run(self):
-        while not self._stopped:
-            func, args = self._queue.get()
-            try:
-                self._result = func(*args)
-            except EINIT:
-                pass
-            except Exception as ex:
-                logging.error(get_exception())
+        func, args = self._queue.get()
+        try:
+            self._result = func(*args)
+        except EINIT:
+            pass
+        except Exception as ex:
+            logging.error(get_exception())
  
     def join(self, timeout=None):
         super().join(timeout)
@@ -94,11 +93,9 @@ class Launcher:
             name = kwargs.get("name", args[0].name or args[0].txt)
         except (AttributeError, IndexError):
             name = get_name(func)
-        t = Thr(func, *args, name=name)
-        t.start()
-        return t
-
-    def proc(self, func, *args, **kwargs):
-        t = Proc(func, tuple(args))
+        if self._threaded or kwargs.get("threaded", False):
+            t = Thr(func, *args, name=name)
+        else:
+            t = Proc(func, *args, name=name)
         t.start()
         return t

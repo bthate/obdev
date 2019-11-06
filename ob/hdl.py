@@ -83,12 +83,11 @@ class Handler(Loader, Launcher):
         for h in self.handlers:
             h(self, e)
         self.dispatch(e)
-        e.wait()
 
     def handler(self, d=None):
+        """ basic event handler routine. """
         if d:
             print(d)
-        """ basic event handler routine. """
         while not self._stopped:
             e = self._queue.get()
             if not e:
@@ -100,8 +99,10 @@ class Handler(Loader, Launcher):
         logging.warning("stop %s" % get_name(self))
         self._ready.set()
 
-    def input(self):
+    def input(self, d=None):
         """ start a input loop. """
+        if d:
+            print(d)
         while not self._stopped:
             e = self.poll()
             self.put(e)
@@ -112,7 +113,9 @@ class Handler(Loader, Launcher):
         self.scan(mod)
         return mod
 
-    def output(self):
+    def output(self, d=None):
+        if d:
+            print(d)
         self._outputed = True
         while not self._stopped:
             channel, txt, type = self._outqueue.get()
@@ -164,7 +167,7 @@ class Handler(Loader, Launcher):
             self.launch(self.output)
         self.launch(self.handler)
         if input:
-            self.input()
+            self.launch(self.input)
 
     def stop(self):
         self._stopped = True

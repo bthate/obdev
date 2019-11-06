@@ -108,17 +108,20 @@ class Kernel(Handler):
             except Exception as ex:
                 logging.error(get_exception())
 
-    def input(self):
+    def input(self, d=None):
         """ start a input loop. """
+        if d:
+            print(d)
         while not self._stopped:
             e = self.poll()
+            print(e)
             self.put(e)
-            e.wait()
+            #e.wait()
 
     def doprompt(self, e):
         """ return a event by prompting for some text. """
         e.txt = input("> ")
-        e.txt = e.txt.rstrip()
+        e.txt = e.txt.strip()
         return e
 
     def poll(self):
@@ -143,7 +146,7 @@ class Kernel(Handler):
         else:
             self.fleet.echo(orig, channel, txt, type)
 
-    def start(self, input=False, output=True):
+    def start(self, input=True, output=True):
         """ start the kernel. """
         if self._started:
             return
@@ -161,7 +164,8 @@ class Kernel(Handler):
         set_completer(self.cmds)
         enable_history()
         writepid()
-        super().start(input, output)
+        super().start(False, output)
+        self.input()
 
     def wait(self):
         """ sleep in a loop. """
