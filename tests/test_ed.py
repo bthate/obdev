@@ -18,4 +18,4 @@ class Test_Ed(unittest.TestCase):
         e.parse("ed log txt==bla txt=mekker")
         k.put(e)
         e.wait()
-        self.assertEqual(e.result, ["edit 0"])
+        self.assertEqual(e.result, [])
