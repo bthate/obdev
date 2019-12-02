@@ -5,12 +5,10 @@ def load(event):
     if not event.args:
         event.reply("|".join({modules[x].split(".")[-1] for x in k.modules}))
         return
-    m = []
-    m.extend(get_mods(k, event.args[0]))
-    k.init(name)
+    mods = k.init(event.args[0])
     set_completer(k.cmds)
-    if m:
-        event.reply("%s loaded" % ",".join([get_name(x) for x in m]))
+    if mods:
+        event.reply("%s loaded" % ",".join([get_name(x) for x in mods]))
 
 def unload(event):
     if not event.args:

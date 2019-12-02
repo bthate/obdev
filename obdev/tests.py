@@ -27,7 +27,7 @@ class Event(Event):
     def reply(self, txt):
         k.raw(txt)
 
-skip = ["reboot", "tinder", "tests", "unload"]
+skip = ["reboot", "tinder", "tinder2", "tests", "unload"]
 
 param = Param()
 e = Event()
@@ -37,7 +37,6 @@ def init():
     ob.workdir = "testdata"
     k.cfg.workdir = "testdata"
     k.cfg.prompt = False
-    k.users.oper("test@shell")
     global param
     global e
     param.ed = ["%s txt==yo channel=#mekker" % x for x in k.names]
@@ -84,7 +83,6 @@ def tinder(event):
                 func = ob.get(k.cmds, cn)
                 e._thrs.append(k.launch(func, e))
                 events.append(e)
-    consume(events)
 
 def tinder2(event):
     try:
@@ -103,7 +101,6 @@ def tinder2(event):
                 e.txt = cn + " " + ex
                 k.put(e)
             events.append(e)
-    consume(events)
     
 def unicode(event):
     event.reply(outtxt)
