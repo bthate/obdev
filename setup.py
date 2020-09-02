@@ -71,7 +71,7 @@ bthate@dds.nl | botfather #dunkbots irc.freenode.net | https://pypi.org/project/
     license='Public Domain',
     zip_safe=True,
     packages=["obdev"],
-    scripts=["bin/obclean", "bin/obdo", "bin/obkill", "bin/obstatus", "bin/obtest"],
+    scripts=["bin/obclean", "bin/obcode", "bin/obdo", "bin/obkill", "bin/obloop", "bin/obstatus", "bin/obtest", "bin/ob2"],
     classifiers=['Development Status :: 3 - Alpha',
                  'License :: Public Domain',
                  'Operating System :: Unix',
