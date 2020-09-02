@@ -3,7 +3,7 @@
 import os; import sys; sys.path.insert(0, os.getcwd())
 sys.path.insert(0, os.getcwd() + os.sep + "..")
 
-for x in os.popen("bin/clean").readlines():
+for x in os.popen("bin/obclean").readlines():
     pass
 
 import importlib
@@ -63,20 +63,6 @@ except ImportError as ex:
     os._exit(0)
 
 
-try:
-    shutil.rmtree("build")
-except:
-    pass
-
-try:
-    shutil.rmtree("dist")
-except:
-    pass
-
-try:
-    shutil.rmtree("%s.egg-info" % fname)
-except:
-    pass
 
 try:
     os.mkdir("dist")
@@ -94,6 +80,20 @@ old =  os.getcwd()
 for fn in fns:
     fnn = os.path.abspath("%s/work/%s" % (old, fn))
     os.chdir(fnn)
+    try:
+        shutil.rmtree("build")
+    except:
+        pass
+
+    try:
+        shutil.rmtree("dist")
+    except:
+        pass
+
+    try:
+        shutil.rmtree("%s.egg-info" % fname)
+    except:
+        pass
     for line in os.popen("python3 setup.py sdist").readlines():
         print(line.strip())
     runstring = '--always-copy --install-dir=%s --script-dir=%s/bin -a -U -l %s ' % (installdir, installdir, fnn)
