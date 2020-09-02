@@ -1,0 +1,13 @@
+# cfg.txt
+
+"""
+    >>> from ob.krn import Cfg 
+    >>> cfg = Cfg()
+    >>> cfg.level = "debug"
+    >>> print(cfg)
+    {
+        "level": "debug",
+    }
+
+"""
+
