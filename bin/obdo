@@ -3,7 +3,7 @@
 import os; import sys; sys.path.insert(0, os.getcwd())
 sys.path.insert(0, os.getcwd() + os.sep + "..")
 
-for x in os.popen("bin/obclean").readlines():
+for x in os.popen("bin/clean").readlines():
     pass
 
 import importlib
@@ -86,25 +86,20 @@ except:
 for line in os.popen("python3 setup.py sdist").readlines():
     print(line.strip())
 
-fns = os.listdir("dist")
+fns = os.listdir("work")
 target = fname
 highest = 0
+old =  os.getcwd()
 
 for fn in fns:
-    ff = fn.split(".")
-    for f in ff:
-        try:
-            nr = int(f.split("-")[-1])
-            break
-        except:
-            pass
-    if nr > highest:
-        highest = nr
-        target = fn
-
-if os.path.exists("dist"):
-    runstring = '--always-copy --install-dir=%s --script-dir=%s/bin -a -U -l %s/dist/%s ' % (installdir, installdir, os.getcwd(), target)
+    fnn = os.path.abspath("%s/work/%s" % (old, fn))
+    os.chdir(fnn)
+    for line in os.popen("python3 setup.py sdist").readlines():
+        print(line.strip())
+    runstring = '--always-copy --install-dir=%s --script-dir=%s/bin -a -U -l %s ' % (installdir, installdir, fnn)
     main(runstring.split())
+
+os.chdir(old)
 
 try:
     shutil.rmtree("%s/pip" % installdir)
