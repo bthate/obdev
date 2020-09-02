@@ -1,7 +1,6 @@
 mkdir work
 cd work
-git clone http://github.com/bthate/ob
-git clone http://github.com/bthate/obdev
-git clone http://github.com/bthate/obdocs
-git clone http://github.com/bthate/obot
-git clone http://github.com/bthate/obsh
+git clone ssh://git@github.com/bthate/olib
+git clone ssh://git@github.com/bthate/ob
+git clone ssh://git@github.com/bthate/obirc
+git clone ssh://git@github.com/bthate/obsh

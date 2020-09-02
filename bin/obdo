@@ -18,7 +18,7 @@ import urllib.request
 pipurl = "https://bootstrap.pypa.io/get-pip.py"
 buildouturl = "https://bootstrap.pypa.io/bootstrap-buildout.py"
 
-fname = "runob"
+fname = "obrun"
 installdir = os.path.join(os.getcwd(), fname)
 
 sys.path.insert(0, installdir)
@@ -132,12 +132,12 @@ except:
     pass
 
 try:
-    shutil.copytree("mods", installdir + os.sep + "mods")
+    shutil.copytree("mods", installdir + os.sep + "obmod")
 except:
     pass
 
 try:
-    shutil.copytree("data", installdir + os.sep + "data")
+    shutil.copytree(os.path.expanduser("~/.ob"), installdir + os.sep + ".ob")
 except:
     pass
 
