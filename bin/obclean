@@ -1,1 +1,29 @@
-rm -fR run data run.tar.gz history _build build envs dist obdev.egg-info *~ docs/*~  bin/*~ work/olib/*~ worl/ob/ob/*~ work/ob/*~ work/ob/ob/__cache__ work/obirc/*~ work/obirc/ob/*~ work/obirc/ob/__pycache work/obsh/obsh/*~ work/obsh/obsh/__pycache__ /*~ obot/util/*~ mods/*~ ob/__pycache__ obot/__pycache__ mods/__pycache__ ob/*~ tests/*~ obot/cmd/__pycache__ tests/__pycache__ docs/code/ docs/html docs/obj
+#!/usr/bin/python3 
+
+__version__ = 1
+
+import os, sys
+
+from ob.csl import execute
+
+def main():
+    curdir = os.getcwd()
+    workdir = os.path.join(curdir, "obwork")
+    if len(sys.argv) == 1:
+        txt = "bin/clean"
+    else:
+        txt = " ".join(sys.argv[1:])
+    for fn in os.listdir(workdir):
+        try:
+            p = os.path.join(workdir, fn)
+            print(p)
+            os.chdir(p)
+            for line in os.popen(txt).readlines():
+                #print(line.rstrip())
+                pass
+        except NotADirectoryError:
+            continue
+        os.chdir(curdir)
+
+execute(main)
+os._exit(0)

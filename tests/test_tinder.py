@@ -1,78 +1,96 @@
-import logging
-import ob
-import os
-import random
-import sys
-import time
-import unittest
+# OB - program your own commands.
+#
+# tinder testing
 
-import obot
+"run all commands on a number of simulated clients."
 
-from ob import Object, k
-from ob.evt import Event
-from ob.utl import consume, randomname
+# imports
 
-class Param(Object):
+import os, random, sys, time, unittest
 
-    pass
+from olib import Object, get
+from ob.hdl import Event
+from ob.krn import get_kernel
+from ob.tsk import launch
 
-e = Event()
+# defines
 
-if k.cfg.options:
-    e.parse("-o %s" % k.cfg.options)
+param = Object()
+param.add = ["test@shell", "bart"]
+param.dne = ["test4", ""]
+param.edt = ["okbot.irc.Cfg", "okbot.irc.Cfg server=localhost", "okbot.irc.Cfg channel=#dunkbots"]
+param.rm = ["reddit", ]
+param.display = ["reddit title,summary,link",]
+param.log = ["test1", ""]
+param.flt = ["0", "1", ""]
+param.fnd = ["log test2", "todo test3", "rss reddit"]
+param.rss = ["https://www.reddit.com/r/python/.rss", ""]
+param.tdo = ["test4", ""]
 
 events = []
+ignore = ["ps", "rm"]
+nrtimes = 1
 
-param = Param()
-param.ed = ["%s txt==yo channel=#mekker" % x for x in k.names]
-param.ed.extend(["%s txt==yo test=a,b,c,d" % x for x in k.names])
-param.find = ["%s txt==yo -f" % x for x in k.names] + ["email txt==gif", ]
-param.load = k.table.keys()
-param.log = ["yo!",]
-param.rm = ["%s txt==yo" % x for x in k.names]
-param.show = ["config", "cmds", "fleet", "kernel", "tasks", "version"]
-param.unload = [k.modules.get(v) for v in k.modules]
+k = get_kernel()
 
-#param.mbox = ["~/evidence/25-1-2013",]
+# classes
+
+class Event(Event):
+
+    def reply(self, txt):
+        if "v" in k.cfg.opts:
+            print(txt)
 
 class Test_Tinder(unittest.TestCase):
 
-    def setUp(self):
-        k.walk("obot")
-
-    def tearDown(self):
-        if events:
-            print(events)
-
-    def test_tinder(self):
-        thrs = []
-        for x in range(e.index or 1):
-            thrs.append(k.launch(tests, ob.k))
-        for thr in thrs:
-            thr.join()
-
-    def test_tinder2(self):
-        for x in range(e.index or 1):
+    def test_all(self):
+        for x in range(k.cfg.index or 1):
             tests(k)
-        
+
+    def test_thrs(self):
+        thrs = []
+        for x in range(k.cfg.index or 1):
+            launch(tests, k)
+        consume(events)
+
+# utilities
+
+def consume(elems):
+    fixed = []
+    res = []
+    for e in elems:
+        r = e.wait()
+        res.append(r)
+        fixed.append(e)
+    for f in fixed:
+        try:
+            elems.remove(f)
+        except ValueError:
+            continue
+    k.stop()
+    return res
+    
 def tests(b):
-    keys = list(b.cmds)
+    keys = list(k.cmds)
     random.shuffle(keys)
     for cmd in keys:
-        if cmd in ["fetch", "exit", "reboot", "reconnect", "tests", "test"]:
+        if cmd in ignore:
             continue
-        events.extend(do_cmd(b, cmd))
-    consume(events)
+        events.extend(do_cmd(cmd))
 
-def do_cmd(b, cmd):
-    exs = ob.get(param, cmd, [randomname(), randomname()])
+def do_cmd(cmd):
+    exs = get(param, cmd, [""])
     e = list(exs)
     random.shuffle(e)
     events = []
+    nr = 0
     for ex in e:
+        nr += 1
+        txt = cmd + " " + ex 
+        if "-v" in sys.argv:
+            print(txt)
         e = Event()
-        e.origin = "test@shell"
-        e.txt = cmd + " " + ex
-        b.put(e)
+        e.txt = txt
+        k.queue.put(e)
         events.append(e)
     return events
