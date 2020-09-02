@@ -41,6 +41,7 @@ def main():
         os.chdir(old)
     obopen("ls -la obegg")
     obopen("python3 -mvirtualenv -p python3 obenv")
+    obopen("cp -Ra obegg obenv/obegg")
     obopen("obenv/bin/source obenv/bin/activate")
     obopen("python3 obenv/bin/pip3 install olib ob obirc obsh -f obegg --upgrade --force-reinstall")
 
