@@ -18,7 +18,7 @@ def main():
     obopen("bin/obclean")
     obopen("mkdir obegg")
     for fn in os.listdir("obwork"):
-        fnn = os.path.abspath("%s/obwork/%s" % (old, fn))
+        fnn = os.path.abspath(os.path.join(old, "obwork", fn))
         print(fnn)
         os.chdir(fnn)
         try:
@@ -30,16 +30,20 @@ def main():
         except:
             pass
         try:
-            shutil.rmtree("%s.egg-info" % fname)
+            shutil.rmtree("%s.egg-info" % fn)
         except:
             pass
         for line in os.popen("python3 setup.py bdist_egg").readlines():
             print(line.strip())
-        obopen("cp dist/* %s" % os.path.join(old, "obegg"))
+        pn = os.path.abspath(os.path.join("..", "..", "obegg"))
+        print(pn)
+        obopen("cp -Ra dist/* %s" % pn)
+        os.chdir(old)
     obopen("ls -la obegg")
-    #obopen("python3 -mvirtualenv --extra-search-path obegg -p python3 obenv")
-    
-os.chdir(old)
-obopen("obenv/bin/source obenv/bin/activate")
-obopen("obenv/bin/python3 obenv/bin/pip3 install "olib>=5" "ob>=32" "obirc>=5" "obsh>=2" -f obegg --upgrade --force-reinstall")
-obopen("tar zcf obenv.tar.gz obenv")
+    obopen("python3 -mvirtualenv -p python3 obenv")
+    obopen("obenv/bin/source obenv/bin/activate")
+    obopen("python3 obenv/bin/pip3 install olib ob obirc obsh -f obegg --upgrade --force-reinstall")
+
+if __name__ == "__main__":
+    main()
+    obopen("tar zcf obenv.tar.gz obenv")
