@@ -1,5 +1,5 @@
-mkdir work
-cd work
+mkdir obwork
+cd obwork
 git clone ssh://git@github.com/bthate/olib
 git clone ssh://git@github.com/bthate/ob
 git clone ssh://git@github.com/bthate/obirc

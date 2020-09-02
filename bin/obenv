@@ -1,0 +1,45 @@
+#!/usr/bin/python3
+# OB - write your own commands.
+#
+#
+
+import os
+
+old =  os.getcwd()
+
+def obopen(txt):
+    try:
+        for line in os.popen(txt).readlines():
+            print(line.rstrip())
+    except:
+        pass
+
+def main():
+    obopen("bin/obclean")
+    obopen("mkdir obegg")
+    for fn in os.listdir("obwork"):
+        fnn = os.path.abspath("%s/obwork/%s" % (old, fn))
+        print(fnn)
+        os.chdir(fnn)
+        try:
+            shutil.rmtree("build")
+        except:
+            pass
+        try:
+            shutil.rmtree("dist")
+        except:
+            pass
+        try:
+            shutil.rmtree("%s.egg-info" % fname)
+        except:
+            pass
+        for line in os.popen("python3 setup.py bdist_egg").readlines():
+            print(line.strip())
+        obopen("cp dist/* %s" % os.path.join(old, "obegg"))
+    obopen("ls -la obegg")
+    #obopen("python3 -mvirtualenv --extra-search-path obegg -p python3 obenv")
+    
+os.chdir(old)
+obopen("obenv/bin/source obenv/bin/activate")
+obopen("obenv/bin/python3 obenv/bin/pip3 install "olib>=5" "ob>=32" "obirc>=5" "obsh>=2" -f obegg --upgrade --force-reinstall")
+obopen("tar zcf obenv.tar.gz obenv")
