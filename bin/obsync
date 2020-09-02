@@ -10,7 +10,7 @@ def main():
     curdir = os.getcwd()
     workdir = os.path.join(curdir, "obwork")
     if len(sys.argv) == 1:
-        txt = "python3 setup.py install"
+        txt = "git push"
     else:
         txt = " ".join(sys.argv[1:])
     for fn in os.listdir(workdir):
