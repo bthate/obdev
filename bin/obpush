@@ -1,0 +1,22 @@
+# OB - write your own command.
+#
+#
+
+"push to repo."
+
+def lopen(workdir, txt):
+    "loop of subdirectories and run txt in a os.popen."
+    old = os.getcwd()
+    for fn in os.listdir(workdir):
+        try:
+            os.chdir(os.path.join(workdir, fn))
+            for line in os.popen(txt).readlines():
+                print(line.rstrip())
+        except NotADirectoryError:
+            continue
+        os.chdir(old)
+
+def main():
+    curdir = os.getcwd()
+    workdir = os.path.join(curdir, "obwork")
+    lopen(workdir, "git push")

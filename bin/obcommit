@@ -1,0 +1,19 @@
+# OB - write your own commands.
+#
+#
+
+"schrijf je eigen commands."
+
+def lopen(workdir, txt):
+    for fn in os.listdir(workdir):
+        try:
+            os.chdir(os.path.join(workdir, fn))
+            for line in os.popen(txt).readlines():
+                print(line.rstrip())
+        except NotADirectoryError:
+            continue
+
+def main():
+    curdir = os.getcwd()
+    workdir = os.path.join(curdir, "obwork")
+    lopen(workdir, "git commit")
