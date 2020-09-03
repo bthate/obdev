@@ -20,10 +20,10 @@ def main():
     for line in os.popen("rm -fR ~/.test").readlines():
         print(line)
     k = Kernel()
-    cfg = parse_cli("test")
+    cfg = parse_cli()
     k.start()
     k.walk("ob,obmod")
-    test_path = os.getcwd() + os.sep + "tests"
+    test_path = os.getcwd() + os.sep + "obtest"
     if cfg.txt:
         pat = "test_%s*" % cfg.txt
     else:
