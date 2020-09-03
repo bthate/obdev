@@ -1,6 +1,5 @@
 #!/bin/bash
-bin/obclean
-bin/obenv
-source obenv/bin/activate
-python3 obenv/bin/pip3 install -U -f obegg olib ob obsh obirc
-python3 obenv/bin/sphinx-build docs html
+
+obenv/bin/python3 obenv/bin/pip3 install -r docs/requirements.txt --upgrade --force-reinstall
+obenv/bin/python3 obenv/bin/pip3 install olib ob obirc obsh -f obegg --upgrade --force-reinstall
+obenv/bin/python3 obenv/bin/sphinx-build docs html
