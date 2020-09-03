@@ -2,4 +2,4 @@
 #
 #
 
-rm -fR docs/olib.rst docs/ob*.rst docs/*~ docs/__pycache__ tests/*~ tests/__pycache__ bin/*~ bin/__pycache__
+rm -fR docs/olib.rst docs/ob*.rst obenv obegg docs/*~ docs/__pycache__ tests/*~ tests/__pycache__ bin/*~ bin/__pycache__

@@ -9,6 +9,7 @@ import os
 curdir = os.getcwd()
 sys.path.insert(0, curdir + os.sep)
 sys.path.insert(0, curdir + os.sep + '..' + os.sep)
+sys.path.insert(0, curdir + os.sep + '..' + os.sep + "obwork" + os.sep)
 sys.path.insert(0, curdir + os.sep + '..' + os.sep + ".." + os.sep)
 
 __version__ = 5
@@ -70,8 +71,10 @@ html_show_copyright = False
 html_copy_source = False
 html_use_opensearch = 'http://obdev.rtfd.io/'
 html_file_suffix = '.html'
-rst_prolog = """ .. image:: ob2.png
-
+rst_prolog = """
+.. image:: ob2.png
+    :width: 100%
+    
 .. title:: NO COPYRIGHT, NO LICENSE, PLACED IN THE PUBLIC DOMAIN"""
 htmlhelp_basename = 'pydoc'
 intersphinx_mapping = {'python': ('https://docs.python.org/3',

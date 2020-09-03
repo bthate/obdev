@@ -9,7 +9,7 @@ recommonmark==0.4.0
 sphinx<1.8
 sphinx-rtd-theme<0.5
 readthedocs-sphinx-ext<0.6
-olib>=7
-ob>=34
-obsh>=7
-obirc>=7
+olib
+ob
+obsh
+obirc

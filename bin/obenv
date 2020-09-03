@@ -16,6 +16,7 @@ def obopen(txt):
 
 def main():
     obopen("bin/obclean")
+    obopen("rm -fR obegg")
     obopen("mkdir obegg")
     for fn in os.listdir("obwork"):
         fnn = os.path.abspath(os.path.join(old, "obwork", fn))
@@ -33,17 +34,17 @@ def main():
             shutil.rmtree("%s.egg-info" % fn)
         except:
             pass
-        for line in os.popen("python3 setup.py bdist_egg").readlines():
+        for line in os.popen("python3 setup.py sdist").readlines():
             print(line.strip())
         pn = os.path.abspath(os.path.join("..", "..", "obegg"))
-        print(pn)
         obopen("cp -Ra dist/* %s" % pn)
         os.chdir(old)
-    obopen("ls -la obegg")
+    obopen("rm -fR ~/.cache/pip/")
     obopen("python3 -mvirtualenv -p python3 obenv")
-    obopen("cp -Ra obegg obenv/obegg")
-    obopen("obenv/bin/source obenv/bin/activate")
-    obopen("python3 obenv/bin/pip3 install olib ob obirc obsh -f obegg --upgrade --force-reinstall")
+    #obopen("mkdir obenv/obegg")
+    #obopen("cp -Ra obegg/* obenv/obegg")
+    #obopen("ls -la obenv/obegg")
+    obopen("obenv/bin/pip3 install olib ob obirc obsh -f obegg --upgrade --force-reinstall")
 
 if __name__ == "__main__":
     main()

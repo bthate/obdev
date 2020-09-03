@@ -1,6 +1,6 @@
 #!/bin/bash
-obclean
-python3 -mvirtualenv -p python3 obenv  
-cp -Ra obegg obenv/obegg
-obenv/bin/python3 obenv/bin/pip3 install -U -f obegg -r docs/requirements.txt
-obenv/bin/python3 obenv/bin/sphinx-build -a -E docs html
+bin/obclean
+bin/obenv
+source obenv/bin/activate
+python3 obenv/bin/pip3 install -U -f obegg olib ob obsh obirc
+python3 obenv/bin/sphinx-build docs html
