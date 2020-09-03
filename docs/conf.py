@@ -70,7 +70,9 @@ html_show_copyright = False
 html_copy_source = False
 html_use_opensearch = 'http://obdev.rtfd.io/'
 html_file_suffix = '.html'
-rst_prolog = """.. title:: NO COPYRIGHT, NO LICENSE, PLACED IN THE PUBLIC DOMAIN"""
+rst_prolog = """ .. image:: ob2.png
+
+.. title:: NO COPYRIGHT, NO LICENSE, PLACED IN THE PUBLIC DOMAIN"""
 htmlhelp_basename = 'pydoc'
 intersphinx_mapping = {'python': ('https://docs.python.org/3',
                                   'python-inv.txt')}

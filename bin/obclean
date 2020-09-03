@@ -24,6 +24,9 @@ def main():
         except NotADirectoryError:
             continue
         os.chdir(curdir)
-
+    print(curdir)
+    for line in os.popen("bin/clean").readlines():
+        print(line.rstrip())
+       
 execute(main)
 os._exit(0)

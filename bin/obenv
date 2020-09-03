@@ -19,7 +19,7 @@ def main():
     obopen("mkdir obegg")
     for fn in os.listdir("obwork"):
         fnn = os.path.abspath(os.path.join(old, "obwork", fn))
-        print(fnn)
+        print("START %s" % fnn)
         os.chdir(fnn)
         try:
             shutil.rmtree("build")
