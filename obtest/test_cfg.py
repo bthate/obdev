@@ -2,7 +2,7 @@
 
 import unittest
 
-from olib import Cfg
+from olib import Cfg, last
 
 class O(object):
 
@@ -21,9 +21,3 @@ class Test_Cfg(unittest.TestCase):
         cfg = Cfg()
         cfg.last = "bla"
         self.assertEqual(cfg.last, "bla")
-
-    def test_last3(self):
-        cfg = Cfg()
-        cfg.last = "bla"
-        with self.assertRaises(TypeError) as x:
-            l = last(cfg)

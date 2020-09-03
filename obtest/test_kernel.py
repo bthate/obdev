@@ -1,10 +1,12 @@
-import logging
-import ob
-import os
+# OB - write your own commands. 
+#
+#
+
 import unittest
 
-from ob import k
-from ob.krn import Cfg
+from ob.krn import Cfg, get_kernel
+
+k = get_kernel()
 
 class Test_Kernel(unittest.TestCase):
 

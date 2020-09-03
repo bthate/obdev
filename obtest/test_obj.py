@@ -4,7 +4,7 @@ import os
 import time
 import unittest
 
-from ob import Object
+from olib import Object
 
 class Test_Object(unittest.TestCase):
 

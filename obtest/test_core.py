@@ -1,30 +1,32 @@
-import logging
-import os
-import unittest
+# OB - write your own commands.
+#
+#
 
-from ob import workdir
-from ob.pst import Persist
+"core tests."
 
-class ENOTCOMPAT(Exception):
-    pass
+import os, unittest
+
+from olib import Object, load, save, workdir
 
 class Test_Core(unittest.TestCase):
 
     def test_load2(self):
-        o = Persist()
+        o = Object()
         o.bla = "mekker"
-        p = o.save()
-        oo = Persist().load(p)
+        p = save(o)
+        oo = Object()
+        load(oo, p)
         self.assertEqual(oo.bla, "mekker")
 
     def test_save(self):
-        o = Persist()
-        p = o.save()
+        o = Object()
+        p = save(o)
         self.assertTrue(os.path.exists(os.path.join(workdir, "store", p)))
 
     def test_subitem(self):
-        o = Persist()
-        o.test = Persist()
-        p = o.save()
-        oo = Persist().load(p)
-        self.assertTrue(type(oo.test), Persist)
+        o = Object()
+        o.test = Object()
+        p = save(o)
+        oo = Object()
+        oo = load(oo, p)
+        self.assertTrue(type(oo.test), Object)
