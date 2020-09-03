@@ -1,5 +1,5 @@
-O B
-###
+OB
+##
 
 | Welcome to  OB , the shell bot to write your own commands for -  see https://pypi.org/project/ob/ 
 
