@@ -8,7 +8,7 @@ from ob.csl import execute
 
 def main():
     curdir = os.getcwd()
-    workdir = os.path.join(curdir, "obwork")
+    workdir = os.path.join(curdir, "work")
     if len(sys.argv) == 1:
         txt = "git pull"
     else:

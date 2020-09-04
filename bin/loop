@@ -1,25 +1,11 @@
 #!/usr/bin/python3 
 
-__version__ = 1
-
 import os, sys
-
 from ob.csl import execute
+from ob.utl import loop
 
 def main():
-    curdir = os.getcwd()
-    workdir = os.path.join(curdir, "obwork")
-    if len(sys.argv) == 1:
-        txt = "python3 setup.py install"
-    else:
-        txt = " ".join(sys.argv[1:])
-    for fn in os.listdir(workdir):
-        try:
-            os.chdir(os.path.join(workdir, fn))
-            for line in os.popen(txt).readlines():
-                print(line.rstrip())
-        except NotADirectoryError:
-            continue
+    loop(os.getcwd(), " ".join(sys.argv[1:])
 
 execute(main)
 os._exit(0)

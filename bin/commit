@@ -1,3 +1,4 @@
+#!/usr/bin/python3 
 # OB - write your own commands.
 #
 #
@@ -15,5 +16,8 @@ def lopen(workdir, txt):
 
 def main():
     curdir = os.getcwd()
-    workdir = os.path.join(curdir, "obwork")
+    workdir = os.path.join(curdir, "work")
     lopen(workdir, "git commit")
+
+if __name__ == "__main__":
+    main()
