@@ -15,11 +15,11 @@ def obopen(txt):
         pass
 
 def main():
-    obopen("bin/obclean")
-    obopen("rm -fR obegg")
-    obopen("mkdir obegg")
-    for fn in os.listdir("obwork"):
-        fnn = os.path.abspath(os.path.join(old, "obwork", fn))
+    obopen("bin/clean")
+    obopen("rm -fR eggs")
+    obopen("mkdir eggs")
+    for fn in os.listdir("work"):
+        fnn = os.path.abspath(os.path.join(old, "work", fn))
         print("START %s" % fnn)
         os.chdir(fnn)
         try:
@@ -36,16 +36,13 @@ def main():
             pass
         for line in os.popen("python3 setup.py sdist").readlines():
             print(line.strip())
-        pn = os.path.abspath(os.path.join("..", "..", "obegg"))
+        pn = os.path.abspath(os.path.join("..", "..", "eggs"))
         obopen("cp -Ra dist/* %s" % pn)
         os.chdir(old)
     obopen("rm -fR ~/.cache/pip/")
-    obopen("python3 -mvirtualenv -p python3 obenv")
-    #obopen("mkdir obenv/obegg")
-    #obopen("cp -Ra obegg/* obenv/obegg")
-    #obopen("ls -la obenv/obegg")
-    obopen("obenv/bin/pip3 install olib ob obirc obsh -f obegg --upgrade --force-reinstall")
+    obopen("python3 -mvirtualenv -p python3 env")
+    obopen("env/bin/pip3 install olib ob obirc obsh -f eggs --upgrade --force-reinstall")
 
 if __name__ == "__main__":
     main()
-    obopen("tar zcf obenv.tar.gz obenv")
+    obopen("tar zcf env.tar.gz env")
