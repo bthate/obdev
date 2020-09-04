@@ -1,5 +1,33 @@
+#!/usr/bin/python3 
 # OB - write your own commands.
 #
 #
 
-rm -fR docs/olib.rst docs/ob*.rst obenv obegg docs/*~ docs/__pycache__ tests/*~ tests/__pycache__ bin/*~ bin/__pycache__
+__version__ = 1
+
+import os, sys ; sys.path.insert(0, os.getcwd())
+
+from ob.csl import execute
+
+def main():
+    os.popen("rm -fR envs eggs docs/*~ docs/__pycache__  docs/olib.rst docs/ob*.rst  tests/*~ tests/__pycache__ bin/*~ bin/__pycache__")
+    curdir = os.getcwd()
+    workdir = os.path.join(curdir, "work")
+    if len(sys.argv) == 1:
+        txt = "bin/clean"
+    else:
+        txt = " ".join(sys.argv[1:])
+    for fn in os.listdir(workdir):
+        try:
+            p = os.path.join(workdir, fn)
+            print(p)
+            os.chdir(p)
+            for line in os.popen(txt).readlines():
+                #print(line.rstrip())
+                pass
+        except NotADirectoryError:
+            continue
+        os.chdir(curdir)
+       
+execute(main)
+os._exit(0)
